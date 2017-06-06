@@ -23,8 +23,8 @@ function PackageInstaller() {
         throw 'All packages must be of type string.';
       }
       if (pkg.indexOf(':') < 1) {
-        //todo change indexOf to regEx pattern matching
-        throw 'Package does not match expected format of \'Package: Depdency\' ';
+        //todo change indexOf to regEx
+        throw 'Package does not match expected format of \'Package: Dependency\'.';
       }
     });
 

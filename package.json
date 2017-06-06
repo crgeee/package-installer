@@ -1,0 +1,19 @@
+{
+  "name": "packageinstaller",
+  "version": "1.0.0",
+  "description": "Package Installer Exercise for Pluralsight",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Christopher Gonzalez",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.0.2",
+    "jshint": "^2.9.4",
+    "mocha": "^3.4.2"
+  },
+  "repository": {
+    "type": "git"
+  }
+}

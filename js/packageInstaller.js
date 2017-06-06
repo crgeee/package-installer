@@ -1,6 +1,7 @@
 function PackageInstaller() {
   return {
-    install: install
+    install: install,
+    validate: validate
   };
 
   /**
@@ -10,6 +11,16 @@ function PackageInstaller() {
    * @returns {string} packages result
    */
   function install(packages) {
+
+  }
+
+  /**
+   * @function validate
+   * @desc Parses input array, determines if valid and returns package.
+   * @param {Array} packages - input of install packages string array.
+   * @returns {Array} packages result after validation.
+   */
+  function validate(packages) {
     if (packages == null) {
       throw 'Packages are required.';
     }
@@ -22,7 +33,7 @@ function PackageInstaller() {
       if (typeof pkg !== 'string') {
         throw 'All packages must be of type string.';
       }
-      if (pkg.indexOf(':') < 1) {
+      if (!pkg.match(/([a-z,0-9])\w+(: )([a-z,0-9])\w+/ig)) {
         //todo change indexOf to regEx
         throw 'Package does not match expected format of \'Package: Dependency\'.';
       }

@@ -2,6 +2,7 @@ function PackageInstaller() {
   return {
     install: install,
     isEmptyOrWhitespace: isEmptyOrWhitespace,
+    topSort: topSort,
     validate: validate
   };
 
@@ -39,48 +40,54 @@ function PackageInstaller() {
       if (!isEmptyOrWhitespace(thisDependency)) {
         parsedPackagesObj[thisPackage].push(thisDependency);
       }
-
-      return topSort(parsedPackagesObj).join(', ');
     }
 
-    function topSort(packages) {
-      var results = [];
-      var sorted = {};
+    return topSort(parsedPackagesObj).join(', ');
+  }
 
-      Object.keys(packages).forEach(function(key) {
-        if (key == null) {
-          // fix for when there's a package dependency that isn't
-          // listed as package itself
-          return;
-        }
-        sort(key, []);
-      });
+  /**
+   * @function topSort
+   * @desc Sorts packages and dependencies into correct order.
+   * @param {object} packages - package & dependency node object
+   * @returns {Array} the sorted package results as string array.
+   */
+  function topSort(packages) {
+    var results = [];
+    var sorted = {};
 
-      function sort(p, ancestors) {
-        if (sorted[p]) {
-          // skip..package was sorted
-          return;
-        }
-        ancestors.push(p); // push to ancestors for checking circular ref
-        var dependencies = packages[p];
-        if (dependencies == null) {
-          // no dependencies, push parent package and continue
-          sorted[p] = true;
-          results.push(p);
-          return;
-        }
-        dependencies.forEach(function(dep) {
-          if (ancestors.indexOf(dep) > -1) {
-            throw 'A circular reference was found.';
-          }
-          sort(dep, ancestors)
-        });
-        results.push(p);
-        sorted[p] = true;
+    Object.keys(packages).forEach(function(key) {
+      if (key == null) {
+        // fix for when there's a package dependency that isn't
+        // listed as package itself
+        return;
       }
+      sort(key, []);
+    });
 
-      return results;
+    function sort(p, ancestors) {
+      if (sorted[p]) {
+        // skip..package was sorted
+        return;
+      }
+      ancestors.push(p); // push to ancestors for checking circular ref
+      var dependencies = packages[p];
+      if (dependencies == null) {
+        // no dependencies, push parent package and continue
+        sorted[p] = true;
+        results.push(p);
+        return;
+      }
+      dependencies.forEach(function(dep) {
+        if (ancestors.indexOf(dep) > -1) {
+          throw 'A circular reference was found.';
+        }
+        sort(dep, ancestors)
+      });
+      results.push(p);
+      sorted[p] = true;
     }
+
+    return results;
   }
 
   /**

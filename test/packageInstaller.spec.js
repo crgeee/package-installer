@@ -33,6 +33,23 @@ describe('PackageInstaller', function() {
     })
   })
 
+  describe('topSort', function() {
+    it('should return an array with 6 items as ["KittenService", "Ice", "Cyberportal", "Leetmeme", "CamelCaser", "Fraudstream"]', function() {
+      var input = {
+        "KittenService": [],
+        "Cyberportal": ["Ice"],
+        "Leetmeme": ["Cyberportal"],
+        "Ice": [],
+        "CamelCaser": ["KittenService"],
+        "Fraudstream": ["Leetmeme"]
+      };
+      var result = packageInstaller.topSort(input);
+      expect(result).to.be.an('array');
+      expect(result).to.have.lengthOf(6);
+      expect(result).to.include.ordered.members(["KittenService", "Ice", "Cyberportal", "Leetmeme", "CamelCaser", "Fraudstream"]);
+    })
+  })
+
   describe('validate', function() {
     it('should return error \'Packages are required.\'', function() {
       var input = null;

@@ -1,3 +1,9 @@
+/**
+ * @function PackageInstaller
+ * @desc Allows you to install pacakges based on string array inputted as 'Package: Dependency'.
+ * @example PackageInstaller.install(['Package1: Dependency1','Package2: Dependency2']...).
+ * @returns {string} of package names as comma separated list in order based on Package: Dependency inputted.
+ */
 function PackageInstaller() {
   return {
     install: install,
@@ -57,7 +63,7 @@ function PackageInstaller() {
 
     Object.keys(packages).forEach(function(key) {
       if (key == null) {
-        // fix for when there's a package dependency that isn't
+        // check when there's a package dependency that isn't
         // listed as package itself
         return;
       }
@@ -81,7 +87,7 @@ function PackageInstaller() {
         if (ancestors.indexOf(dep) > -1) {
           throw 'A circular reference was found.';
         }
-        sort(dep, ancestors)
+        sort(dep, ancestors);
       });
       results.push(p);
       sorted[p] = true;

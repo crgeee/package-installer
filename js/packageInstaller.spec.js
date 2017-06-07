@@ -10,6 +10,33 @@ describe('PackageInstaller', function() {
       var result = packageInstaller.install(input);
       expect(result).to.have.string('CamelCaser, KittenService');
     })
+    it('should return string \'KittenService, Ice, Cyberportal, Leetmeme, CamelCaser, Fraudstream\'', function() {
+      var input = ['KittenService: ', 'Leetmeme: Cyberportal', 'Cyberportal: Ice', 'CamelCaser: KittenService', 'Fraudstream: Leetmeme', 'Ice: '];
+      var result = packageInstaller.install(input);
+      expect(result).to.have.string('KittenService, Ice, Cyberportal, Leetmeme, CamelCaser, Fraudstream');
+    })
+    it('should return string \'KittenService, Ice, Cyberportal, Leetmeme, CamelCaser, Fraudstream\' and Ice is not a package', function() {
+      var input = ['KittenService: ', 'Leetmeme: Cyberportal', 'Cyberportal: Ice', 'CamelCaser: KittenService', 'Fraudstream: Leetmeme'];
+      var result = packageInstaller.install(input);
+      expect(result).to.have.string('KittenService, Ice, Cyberportal, Leetmeme, CamelCaser, Fraudstream');
+    })
+    it('should return string \'4567, 1234, howDyT13fd, Christopher, michael, a\'', function() {
+      var input = ['1234: 4567', 'Christopher: howDyT13fd', 'michael: Christopher', 'a: 4567'];
+      var result = packageInstaller.install(input);
+      expect(result).to.have.string('4567, 1234, howDyT13fd, Christopher, michael, a');
+    })
+    it('should return error \'A circular reference was found.\'', function() {
+      var input = ['KittenService: ', 'Leetmeme: Cyberportal', 'Cyberportal: Ice', 'CamelCaser: KittenService', 'Fraudstream: ', 'Ice: Leetmeme'];
+      expect(function() {
+        packageInstaller.install(input);
+      }).to.throw('A circular reference was found.');
+    })
+    it('should return error \'Package does not match expected format of \'Package: Dependency\'.\' (dependency has space)', function() {
+      var input = ['KittenService: ', 'Leetmeme: Cyberportal', 'Ice: Leetm eme'];
+      expect(function() {
+        packageInstaller.install(input);
+      }).to.throw('Package does not match expected format of \'Package: Dependency\'.');
+    })
   })
 
   describe('isEmptyOrSpaces', function() {
@@ -47,6 +74,31 @@ describe('PackageInstaller', function() {
       expect(result).to.be.an('array');
       expect(result).to.have.lengthOf(6);
       expect(result).to.include.ordered.members(["KittenService", "Ice", "Cyberportal", "Leetmeme", "CamelCaser", "Fraudstream"]);
+    })
+    it('should return an array with 5 items as ["KittenService", "Ice", "Cyberportal", "Leetmeme", "Fraudstream"] and Ice is not listed as a package', function() {
+      var input = {
+        "KittenService": [],
+        "Cyberportal": ["Ice"],
+        "Leetmeme": ["Cyberportal"],
+        "Fraudstream": ["Leetmeme"]
+      };
+      var result = packageInstaller.topSort(input);
+      expect(result).to.be.an('array');
+      expect(result).to.have.lengthOf(5);
+      expect(result).to.include.ordered.members(["KittenService", "Ice", "Cyberportal", "Leetmeme", "Fraudstream"]);
+    })
+    it('should return error \'A circular reference was found.\'', function() {
+      var input = {
+        "KittenService": [],
+        "Cyberportal": ["Ice"],
+        "Leetmeme": ["Cyberportal"],
+        "Ice": ["Fraudstream"],
+        "CamelCaser": ["KittenService"],
+        "Fraudstream": ["Leetmeme"]
+      };
+      expect(function() {
+        packageInstaller.topSort(input);
+      }).to.throw('A circular reference was found.');
     })
   })
 

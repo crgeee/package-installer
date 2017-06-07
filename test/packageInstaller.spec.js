@@ -4,6 +4,13 @@ var packageInstaller = require('../js/packageinstaller.js');
 var should = require('chai').should();
 
 describe('PackageInstaller', function () {
+  describe('install', function () {
+    it('should return string \'CamelCaser, KittenService\'', function() {
+      var input = ['KittenService: CamelCaser', 'CamelCaser: '];
+      var result = packageInstaller.install(input);
+      expect(result).to.have.string('CamelCaser, KittenService');
+    })
+  })
   describe('validate', function() {
     it('should return error \'Packages are required.\'', function() {
       var input = null;
@@ -30,7 +37,7 @@ describe('PackageInstaller', function () {
       }).to.throw('Package does not match expected format of \'Package: Dependency\'.');
     })
     it('should return error \'Package does not match expected format of \'Package: Dependency\'.\' (double space)', function() {
-      var input = ["DoubleSpace:  Dependency1", "Pkg2: Dependency2"];
+      var input = ["DoubleSpace:  Dependency1"];
       expect(function() {
         packageInstaller.validate(input);
       }).to.throw('Package does not match expected format of \'Package: Dependency\'.');
@@ -40,6 +47,11 @@ describe('PackageInstaller', function () {
       expect(function() {
         packageInstaller.validate(input);
       }).to.throw('Package does not match expected format of \'Package: Dependency\'.');
+    })
+    it('should return without throwing an error', function () {
+      var input = ['KittenService: CamelCaser', 'CamelCaser: '];
+      var result = packageInstaller.validate(input);
+      expect(result).to.be.true;
     })
   })
 })

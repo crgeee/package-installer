@@ -15,7 +15,6 @@ function PackageInstaller() {
     validate(packages);
 
     var parsedPackagesObj = {};
-    var returnResults;
 
     for (var i = 0; i < packages.length; i++) {
       // split array into two and get Package & Dependency
@@ -40,6 +39,47 @@ function PackageInstaller() {
       if (!isEmptyOrWhitespace(thisDependency)) {
         parsedPackagesObj[thisPackage].push(thisDependency);
       }
+
+      return topSort(parsedPackagesObj).join(', ');
+    }
+
+    function topSort(packages) {
+      var results = [];
+      var sorted = {};
+
+      Object.keys(packages).forEach(function(key) {
+        if (key == null) {
+          // fix for when there's a package dependency that isn't
+          // listed as package itself
+          return;
+        }
+        sort(key, []);
+      });
+
+      function sort(p, ancestors) {
+        if (sorted[p]) {
+          // skip..package was sorted
+          return;
+        }
+        ancestors.push(p); // push to ancestors for checking circular ref
+        var dependencies = packages[p];
+        if (dependencies == null) {
+          // no dependencies, push parent package and continue
+          sorted[p] = true;
+          results.push(p);
+          return;
+        }
+        dependencies.forEach(function(dep) {
+          if (ancestors.indexOf(dep) > -1) {
+            throw 'A circular reference was found.';
+          }
+          sort(dep, ancestors)
+        });
+        results.push(p);
+        sorted[p] = true;
+      }
+
+      return results;
     }
   }
 

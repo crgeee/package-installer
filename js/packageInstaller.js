@@ -1,6 +1,7 @@
 function PackageInstaller() {
   return {
     install: install,
+    isEmptyOrWhitespace: isEmptyOrWhitespace,
     validate: validate
   };
 
@@ -13,7 +14,43 @@ function PackageInstaller() {
   function install(packages) {
     validate(packages);
 
+    var parsedPackagesObj = {};
+    var returnResults;
 
+    for (var i = 0; i < packages.length; i++) {
+      // split array into two and get Package & Dependency
+      var splitArr = packages[i].split(': ');
+      var thisPackage = splitArr[0].trim();
+      var thisDependency = splitArr[1].trim();
+
+      // check if dependency exists and is in the object.
+      // add property if exists and is not in object
+      if (!isEmptyOrWhitespace(thisDependency) && !parsedPackagesObj[thisDependency]) {
+        parsedPackagesObj[thisDependency] = [];
+      }
+
+      // check if package exists and is in the object.
+      // add property if exists and is not in object
+      if (!parsedPackagesObj[thisPackage]) {
+        parsedPackagesObj[thisPackage] = [];
+      }
+
+      // check if dependency exists.
+      // if true, push to the package's array as a dependency
+      if (!isEmptyOrWhitespace(thisDependency)) {
+        parsedPackagesObj[thisPackage].push(thisDependency);
+      }
+    }
+  }
+
+  /**
+   * @function isEmptyOrWhitespace
+   * @desc Determines if provided string is empty (null, undefined) or whitespace.
+   * @param {string} str - input string to check.
+   * @returns {boolean} true or false if it is empty or whitespace.
+   */
+  function isEmptyOrWhitespace(str) {
+    return str == null || str.length < 1 || str.match(/^ *$/) !== null;
   }
 
   /**

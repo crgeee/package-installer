@@ -48,8 +48,19 @@ describe('PackageInstaller', function () {
         packageInstaller.validate(input);
       }).to.throw('Package does not match expected format of \'Package: Dependency\'.');
     })
-    it('should return without throwing an error', function () {
+    it('should return error \'Package does not match expected format of \'Package: Dependency\'.\' (dependency has space)', function() {
+      var input = ["NoSpace:Dependency Is Invalid"];
+      expect(function() {
+        packageInstaller.validate(input);
+      }).to.throw('Package does not match expected format of \'Package: Dependency\'.');
+    })
+    it('should return without throwing an error (exercise case 1)', function () {
       var input = ['KittenService: CamelCaser', 'CamelCaser: '];
+      var result = packageInstaller.validate(input);
+      expect(result).to.be.true;
+    })
+    it('should return without throwing an error (exercise case 2)', function () {
+      var input = ['KittenService: ', 'Leetmeme: Cyberportal', 'Cyberportal: Ice', 'CamelCaser: KittenService', 'Fraudstream: Leetmeme', 'Ice: '];
       var result = packageInstaller.validate(input);
       expect(result).to.be.true;
     })

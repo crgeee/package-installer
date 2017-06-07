@@ -35,7 +35,7 @@ function PackageInstaller() {
       if (typeof pkg !== 'string') {
         throw 'All packages must be of type string.';
       }
-      if (!pkg.match(/^\w+(: )(\w+)|\w+(: $)/ig)) {
+      if (!pkg.match(/^\w+(: )(\w+)\S$|\w+(: $)/ig)) {
         throw 'Package does not match expected format of \'Package: Dependency\'.';
       }
     });
